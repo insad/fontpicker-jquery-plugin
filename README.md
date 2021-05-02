@@ -4,7 +4,7 @@ A component to quickly choose fonts from Google Web Fonts, custom fonts you (the
 Lets users easily select and preview a font from Google's large range of free fonts, and optionally select a font weight and font style (normal or italics).
 This plugin is the successor of the [Fontselect jQuery plugin](https://github.com/av01d/fontselect-jquery-plugin).
 
-<img src="https://av01d.github.com/fontpicker-jquery-plugin/img/fontpicker.png" width="200" height="256">
+<img src="https://av01d.github.io/fontpicker-jquery-plugin/img/fontpicker.png" width="200" height="256">
 
 
 ## [Live Demo](https://av01d.github.io/fontpicker-jquery-plugin/index.html)
@@ -16,7 +16,8 @@ This plugin is the successor of the [Fontselect jQuery plugin](https://github.co
 - [Options](#options)
 - [Methods](#methods)
 - [Events](#events)
-- [Real World Examples](#real-world-examples)
+- [Browser support](#browser-support)
+- [Real world examples](#real-world-examples)
 - [License](#license)
 
 ## Features
@@ -50,7 +51,7 @@ This is a jQuery plugin, so... make sure you load jQuery before you include this
 
 ```html
 <link href="/path/to/dist/jquery.fontpicker.min.css" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="/path/to/dist/jquery.fontpicker.min.js"></script>
 ```
 ### Usage
@@ -77,6 +78,7 @@ $('input.fonts').fontpicker({
    lang: 'en',
    variants: true,
    lazyLoad: true,
+	showClear: true,
    nrRecents: 3,
    googleFonts: 'Alegreya,Boogaloo,Coiny,Dosis,Emilys Candy,Faster One,Galindo'.split(','),
    localFonts: {
@@ -135,6 +137,7 @@ Fontpicker has one argument, an options object that you can customise.
 - Options:
   - `en`: English
   - `de`: German
+  - `es`: Spanish
   - `nl`: Dutch
 
 The interface language.
@@ -275,6 +278,28 @@ $('#font').fontpicker({
 });
 ```
 
+### showClear
+
+- Type: `Boolean`
+- Default: `false`
+
+When enabled, users can clear/deselect a selected font. A *clear* icon will be rendered in the font dropdown.
+
+### onSelect
+
+- Type: `function`
+- Default: `undefined`
+
+By default, the Fontpicker Plugin calls `change` on the original input element.
+This is sufficient in many cases, but sometimes you also need to know whether a local or Google font was selected. That's where the `onSelect` callback comes in.
+This callback function is called when the user picks a font. The function is called with a single argument: an object, containing the following members:
+
+  - `fontType`: Either `local` or `google`
+  - `fontFamily`: The font family name (string)
+  - `fontStyle`: Either `normal` or `italic`
+  - `fontWeight`: The font weight the user selected (integer). 
+  - `fontSpec`: The complete font spec. For example: `Arial:400` or `Roboto:700i`. 
+
 ### debug
 
 - Type: `Boolean`
@@ -304,6 +329,11 @@ or
 $('#font').val('Open Sans:800i').triggger('change');
 ```
 
+You can programmatically clear a selected font like this:
+```
+$('#font').val('').trigger('change');
+```
+
 ### show
 
 Show the font picker manually
@@ -324,6 +354,23 @@ Destroy the font picker, revert element back to original.
 ```
 $('#font').fontpicker('destroy');
 ```
+
+[⬆ back to top](#table-of-contents)
+
+## Browser support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Opera (latest)
+- Edge (latest)
+- Internet Explorer 11
+
+Please note: For Internet Explorer, you must include the *intersection-observer* polyfill:
+```html
+<script src="https://cdn.jsdelivr.net/npm/intersection-observer/intersection-observer.js"></script>
+```
+You can include this anywhere in your page, either before or after including `jquery.fontpicker.js`.
 
 [⬆ back to top](#table-of-contents)
 
@@ -357,12 +404,16 @@ $('#font').fontpicker().on('change', function() {
 });
 ```
 
+It is not possible to distinguish between local and Google fonts through the `change` event. Take a look at the [`onSelect`](#onSelect) option for an alternative.
+
 [⬆ back to top](#table-of-contents)
 
-## Real World Examples
+## Real world examples
 
 The Fontpicker plugin is used (among others) on the following websites:
 
+- [Chartle.com](https://www.chartle.com/)
+- [MindMapEditor.com](https://www.mindmapeditor.com/)
 - [PhotoCollage.com](https://www.photocollage.com/)
 - [PhotoEditor.com](https://www.photoeditor.com/)
 - [PhotoFilters.com](https://www.photofilters.com/)
@@ -378,6 +429,6 @@ The Fontpicker plugin is used (among others) on the following websites:
 This plugin is released under the MIT license. It is simple and easy to understand and places almost no restrictions on what you can do with the code.
 [More Information](http://en.wikipedia.org/wiki/MIT_License)
 
-The development of this plugin was funded by [Zygomatic](https://www.zygomatic.nl/).
+The development of this component was funded by [Zygomatic](https://www.zygomatic.nl/).
 
 [⬆ back to top](#table-of-contents)

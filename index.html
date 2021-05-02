@@ -61,12 +61,27 @@
 		}
 
 	</style>
+	<!-- For Internet Explorer 11: include intersection observer polyfill
+	<script src="https://cdn.jsdelivr.net/npm/intersection-observer/intersection-observer.js"></script>
+	-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script src="dist/jquery.fontpicker.js"></script>
 	<script>
 
 	function applyFont(element, fontSpec) {
+		if (!fontSpec) {
+			// Font was cleared
+			console.log('You cleared font');
+
+			$(element).css({
+				fontFamily: 'inherit',
+				fontWeight: 'normal',
+				fontStyle: 'normal'
+			});
+			return;
+		}
+
 		console.log('You selected font: ' + fontSpec);
 
 		// Split font into family and weight/style
@@ -76,14 +91,12 @@
 			weight = parseInt(variant,10),
 			italic = /i$/.test(variant);
 
-		// Set selected font on paragraphs
-		var css = {
+		// Apply selected font to element
+		$(element).css({
 			fontFamily: "'" + family + "'",
 			fontWeight: weight,
 			fontStyle: italic ? 'italic' : 'normal'
-		};
-
-		$(element).css(css);
+		});
 	}
 
 	$(function() {
@@ -126,10 +139,15 @@ $('#font1')
 
 			<button class="btn" type="button" onclick="$('#font1').val('Geo:400').trigger('change')">Select <i>Geo 400</i> font</button>
 			<button class="btn" type="button" onclick="$('#font1').val('Open Sans:800').trigger('change')">Select <i>Opens Sans 800</i> font</button>
+			<br>
 			<button class="btn" type="button" onclick="$('#font1').val('Tahoma').trigger('change')">Select <i>Tahoma</i> font</button>
+
+			<button class="btn" type="button" onclick="$('#font1').val('').trigger('change')">Clear</button>
+
 			<br>
 			API: <button class="btn btn-link" onclick="$('#font1').fontpicker('show')">Show</button> -
 			<button class="btn btn-link" onclick="$('#font1').fontpicker('destroy')">Destroy</button>
+
 
 			<script>
 				$('#font1')
@@ -149,6 +167,8 @@ $('#font1')
 	Users can only select a font-family, font-variant selection is disabled (<tt>variants: false</tt>).
 	<br>
 	This Fontpicker will not remember last picked fonts (<tt>nrRecents: 0</tt>).
+	<br>
+	This Fontpicker allows the user to clear/deselect a chosen font (<tt>showClear: true</tt>).
 	</p>
 	<div class="example">
 		<pre><code class="html">
@@ -158,6 +178,7 @@ $('#font1')
 $('#font2').fontpicker({
 	variants: false,
 	nrRecents: 0,
+	showClear: true,
 	googleFonts: [
 		'Abel', 'Advent Pro', 'Changa', 'Eczar', 'Gloria Hallelujah',
 		'Indie Flower', 'Press Start 2P', 'Slackey', 'Yeon Sung'
@@ -175,6 +196,7 @@ $('#font2').fontpicker({
 				$('#font2').fontpicker({
 					variants: false,
 					nrRecents: 0,
+					showClear: true,
 					googleFonts: [
 						'Abel', 'Advent Pro', 'Changa', 'Eczar', 'Gloria Hallelujah',
 						'Indie Flower', 'Press Start 2P', 'Slackey', 'Yeon Sung'
@@ -187,7 +209,7 @@ $('#font2').fontpicker({
 			</script>
 		</div>
 	</div>
-	<!-- Example 2 -->
+	<!-- /Example 2 -->
 
 	<!-- Example 3 -->
 	<h2>Example 3: Custom local fonts, no Google fonts</h2>
@@ -295,6 +317,88 @@ $('#font3').fontpicker({
 		</div>
 	</div>
 	<!-- /Example 3 -->
+
+	<!-- Example 4 -->
+	<h2>Example 4: Some local fonts, custom Google fonts, onSelect callback</h2>
+	<p id="sample4">
+	The dropdown shows a mix of local, custom and Google fonts. 
+	Instead of <tt>on('change', fn)</tt>, the <tt>onSelect</tt> callback is used to be
+	notified about the font the user picked. The <tt>onSelect</tt> option is called 
+	with a single argument: an object containing <tt>fontType</tt> (<tt>local</tt> or <tt>google</tt>), <tt>fontFamily</tt>,
+	<tt>fontStyle</tt>, <tt>fontWeight</tt> and <tt>fontSpec</tt> members.<br>
+	<tt>obj.fontSpec</tt> contains the same value that <tt>on('change', fn)</tt>
+	would be called with.
+	</p>
+	<div class="example">
+		<pre><code class="html">
+&lt;input id="font4" type="text" value="Cookie"&gt;
+
+&lt;script&gt;
+var localFonts = {
+	"Arial": {
+		"category": "sans-serif",
+		"variants": "400,400i,600,600i"
+	},
+	"Georgia": {
+		"category": "serif",
+		"variants": "400,400i,600,600i"
+	},
+	"Times New Roman": {
+		"category": "serif",
+		"variants": "400,400i,600,600i"
+	},
+	"Verdana": {
+		"category": "sans-serif",
+		"variants": "400,400i,600,600i",
+	},
+
+	"Action Man": {},
+	"Bauer": {
+		"category": "display",
+		"variants": "400,400i,600,600i",
+		"subsets": "latin-ext,latin"
+	},
+	"Bubble": {
+		"category": "display",
+		"variants": "400,400i,600,600i",
+		"subsets": "latin-ext,latin"
+	}
+};
+
+&lt;script&gt;
+$('#font4').fontpicker({
+	localFontsUrl: 'fonts/',
+	localFonts: localFonts,
+	googleFonts: [
+		'Mali', 'Aladin', 'Alex Brush', 'Amita', 'Annie Use Your Telescope', 'Architects Daughter',
+		'Bad Script', 'Bilbo', 'Bonbon', 'Caveat', 'Chilanka', 'Cookie', 'Crafty Girls'
+	],
+	onSelect: function(obj) {
+		console.log('onSelect', obj);
+		applyFont('#sample4', obj.fontSpec);
+	}
+});
+&lt;/script&gt;
+		</code></pre>
+		<div>
+			<input id="font4" type="text" value="Cookie">
+			<script>
+				$('#font4').fontpicker({
+					localFontsUrl: 'fonts/',
+					localFonts: localFonts,
+					googleFonts: [
+						'Mali', 'Aladin', 'Alex Brush', 'Amita', 'Annie Use Your Telescope', 'Architects Daughter',
+						'Bad Script', 'Bilbo', 'Bonbon', 'Caveat', 'Chilanka', 'Cookie', 'Crafty Girls'
+					],
+					onSelect: function(obj) {
+						console.log('onSelect', obj);
+						applyFont('#sample4', obj.fontSpec);
+					}
+				});
+			</script>
+		</div>
+	</div>
+	<!-- /Example 4 -->
 
 </body>
 </html>
